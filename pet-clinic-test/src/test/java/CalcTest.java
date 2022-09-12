@@ -3,31 +3,31 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import org.example.Calc;
 
-public class AppTest {
+public class CalcTest {
+    Calc it;
     @BeforeAll
-    static void setup(){
+    static void setup() {
         System.out.println("@BeforeAll executed");
     }
 
     @BeforeEach
-    void setupThis(){
+    void setupThis() {
         System.out.println("@BeforeEach executed");
+        it = new Calc();
     }
 
     @Tag("DEV")
     @Test
-    void testCalcCount()
+    void itFailsFourArgs()
     {
         System.out.println("======TEST wrong count of args=======");
-        Calc sum1 = new Calc();
         String args[] = {"10", "+", "15", "="};
-        Assertions.assertEquals( "usage: arg1 + arg2" , sum1.calculate(args));
+        Assertions.assertEquals( "usage: arg1 + arg2" , it.calculate(args));
     }
 
     @Tag("DEV")
@@ -35,9 +35,8 @@ public class AppTest {
     void testCalcFirst()
     {
         System.out.println("======TEST wrong first arg=======");
-        Calc sum1 = new Calc();
         String args[] = {"a", "-", "15"};
-        Assertions.assertEquals( "usage: arg1 + arg2" , sum1.calculate(args));
+        Assertions.assertEquals( "usage: arg1 + arg2" , it.calculate(args));
     }
 
     @Tag("PROD")
@@ -45,9 +44,8 @@ public class AppTest {
     void testCalcSecond()
     {
         System.out.println("======TEST wrong second arg=======");
-        Calc sum1 = new Calc();
         String args[] = {"10", "-", "15"};
-        Assertions.assertEquals( "usage: arg1 + arg2" , sum1.calculate(args));
+        Assertions.assertEquals( "usage: arg1 + arg2" , it.calculate(args));
     }
 
     @Tag("DEV")
@@ -55,9 +53,8 @@ public class AppTest {
     void testCalcThird()
     {
         System.out.println("======TEST wrong third arg=======");
-        Calc sum1 = new Calc();
         String args[] = {"10", "+", "b"};
-        Assertions.assertEquals( "usage: arg1 + arg2" , sum1.calculate(args));
+        Assertions.assertEquals( "usage: arg1 + arg2" , it.calculate(args));
     }
 
     @Tag("DEV")
@@ -65,9 +62,8 @@ public class AppTest {
     void testCalcValid()
     {
         System.out.println("======TEST wrong third arg=======");
-        Calc sum1 = new Calc();
         String args[] = {"10", "+", "15"};
-        Assertions.assertEquals( "25" , sum1.calculate(args));
+        Assertions.assertEquals( "25" , it.calculate(args));
     }
 
     @AfterEach
