@@ -1,4 +1,4 @@
-package tests;
+package pettype;
 
 import org.junit.Test;
 import io.restassured.RestAssured;
