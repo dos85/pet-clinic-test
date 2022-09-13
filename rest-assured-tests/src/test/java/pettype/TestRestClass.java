@@ -1,5 +1,7 @@
 package pettype;
 
+import io.restassured.http.ContentType;
+import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import net.minidev.json.JSONObject;
@@ -10,11 +12,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Date;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 public class TestRestClass {
     String baseUrl;
-    public int petTypeId;
+    int petTypeId;
+    String petName;
     @BeforeAll
     static void setup() {
         System.out.println("@BeforeAll executed");
@@ -24,7 +28,9 @@ public class TestRestClass {
     void setupThis() {
         System.out.println("@BeforeEach executed: set up base url");
         baseUrl = "http://localhost:9966/petclinic/api/pettypes/";
+        petName = String.format("New pet type # %1$TH%1$TM%1$TS", new Date());
         petTypeId = 20;
+        RestAssured.defaultParser = Parser.JSON;
     }
     @Test
     public void getPetTypeName(){
@@ -39,9 +45,8 @@ public class TestRestClass {
         RequestSpecification request = RestAssured.given();
         request.header("Content-Type", "application/json");
 
-        String someRandomString = String.format("New pet type # %1$TH%1$TM%1$TS", new Date());
         JSONObject requestBody = new JSONObject();
-        requestBody.put("name", someRandomString);
+        requestBody.put("name", petName);
         requestBody.put("id", petTypeId);
         request.body(requestBody.toJSONString());
         Response response = request.post(baseUrl);
@@ -68,5 +73,19 @@ public class TestRestClass {
         int statusCode = response.getStatusCode();
         System.out.println("The status code received: " + statusCode);
         return statusCode;
+    }
+    public Response callGetPetTypeList() {
+        RequestSpecification request = RestAssured.given();
+        request.header("Content-Type", "application/json");
+
+        Response response = request.get(baseUrl).then().contentType(ContentType.JSON).extract().response();
+        return response;
+    }
+
+    public int getPetTypeIdByName () {
+        Response  petTypesList = callGetPetTypeList();
+        Map<String, String> petTypes = petTypesList.jsonPath().getMap("name[0]");
+        System.out.println(petTypes.get("id"));
+        return 1;
     }
 }

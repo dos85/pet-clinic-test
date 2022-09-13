@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3d8c7694-5876-4cf0-a065-a721575af6bd" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../pet-clinic-test/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../rest-assured-test/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../rest-assured-test/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/pettype/TestRestClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/pettype/TestRestClass.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
