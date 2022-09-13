@@ -13,22 +13,24 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 public class TestRestClass {
     String baseUrl;
     int petTypeId;
-    String petName;
+    String petName = String.format("New pet type # %1$TH%1$TM%1$TS", new Date());;
     @BeforeAll
     static void setup() {
         System.out.println("@BeforeAll executed");
+
     }
 
     @BeforeEach
     void setupThis() {
         System.out.println("@BeforeEach executed: set up base url");
         baseUrl = "http://localhost:9966/petclinic/api/pettypes/";
-        petName = String.format("New pet type # %1$TH%1$TM%1$TS", new Date());
+
         petTypeId = 20;
         RestAssured.defaultParser = Parser.JSON;
     }
@@ -82,10 +84,18 @@ public class TestRestClass {
         return response;
     }
 
-    public int getPetTypeIdByName () {
+    @Test
+    public void getPetTypeIdByName () {
         Response  petTypesList = callGetPetTypeList();
-        Map<String, String> petTypes = petTypesList.jsonPath().getMap("name[0]");
-        System.out.println(petTypes.get("id"));
-        return 1;
+        Object str = petTypesList.jsonPath().getList(".").stream()
+                .map(m -> (Map<String, Object>) m)
+                .filter(m -> m.get("name").equals(petName))
+                .map(m -> m.get("id"))
+                .findAny().get()
+                ;
+        ;
+        System.out.println(str);
+ //       Map<String, String> petTypes = petTypesList.jsonPath().getMap("name");
+//        System.out.println(petTypes.get("id"));
     }
 }
