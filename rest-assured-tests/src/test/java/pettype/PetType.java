@@ -6,9 +6,14 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
+
+import static org.hamcrest.Matchers.is;
 
 public class PetType {
     String baseUrl;
@@ -19,7 +24,11 @@ public class PetType {
         System.out.println("@Set up values");
         petTypeName = String.format("New pet type # %f", Math.random());
         baseUrl = "http://localhost:9966/petclinic/api/pettypes/";
-        petTypeId = 1;
+
+        //in case of set up existing petTypeId value it will be updated by post
+        petTypeId = 0;
+
+        System.out.println("Pet type name is " + petTypeName);
     }
     public Response callGetPetTypeList() {
         RequestSpecification request = RestAssured.given();
@@ -60,6 +69,27 @@ public class PetType {
         request.body(requestBody.toJSONString());
         Response response = request.post(baseUrl);
         petTypeId = getPetTypeIdByName();
+        System.out.println("Pet Type Id for added "+ petTypeName + " is " + petTypeId);
         return response.getStatusCode();
+    }
+    public int updatePetType() {
+        RequestSpecification request = RestAssured.given();
+        request.header("Content-Type", "application/json");
+
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("name", petTypeName);
+        requestBody.put("id", petTypeId);
+        request.body(requestBody.toJSONString());
+        Response response = request.put(baseUrl+petTypeId);
+        System.out.println("Pet Type # " + petTypeId + " is updated with new name: "+ petTypeName);
+        return response.getStatusCode();
+    }
+
+    public void checkPetTypeName(int PetTID, String petTName){
+        RestAssured.
+                when().get(baseUrl + PetTID).
+                then().assertThat().statusCode(200).
+                and().body("name", is(petTName));
+        System.out.println("Pet type #"+PetTID +" is "+petTName);
     }
 }

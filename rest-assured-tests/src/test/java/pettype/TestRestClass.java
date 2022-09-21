@@ -17,9 +17,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 public class TestRestClass {
-    String baseUrl;
-    int petTypeId;
-    String petName = String.format("New pet type # %1$TH%1$TM%1$TS", new Date());;
+    PetType pt;
     @BeforeAll
     static void setup() {
         System.out.println("@BeforeAll executed");
@@ -28,74 +26,51 @@ public class TestRestClass {
 
     @BeforeEach
     void setupThis() {
-        System.out.println("@BeforeEach executed: set up base url");
-        baseUrl = "http://localhost:9966/petclinic/api/pettypes/";
-
-        petTypeId = 20;
+        System.out.println("@BeforeEach executed: use new pet type");
+        pt = new PetType();
+        pt.create();
         RestAssured.defaultParser = Parser.JSON;
     }
-    @Test
-    public void getPetTypeName(){
-    RestAssured.
-            when().get(baseUrl + "1").
-            then().assertThat().statusCode(200).
-            and().body("name", is("cat"));
-    }
 
+    @Test
+    public void getPetType() {
+        pt.checkPetTypeName(1, "cat");
+        pt.addPetType();
+        pt.checkPetTypeName(pt.petTypeId, pt.petTypeName);
+    }
     @Test
     public void postPetType() {
-        RequestSpecification request = RestAssured.given();
-        request.header("Content-Type", "application/json");
-
-        JSONObject requestBody = new JSONObject();
-        requestBody.put("name", petName);
-        requestBody.put("id", petTypeId);
-        request.body(requestBody.toJSONString());
-        Response response = request.post(baseUrl);
-        int statusCode = response.getStatusCode();
-        System.out.println("The status code received: " + statusCode);
+        int statusCode = pt.addPetType();
+        System.out.println("The status code for post pet type received: " + statusCode);
         Assertions.assertEquals(statusCode, 201);
     }
     @Test
-    public void deleteNotExistingPetType() {
-        int statusCode = callDeletePetType(petTypeId+1);
-        Assertions.assertEquals(statusCode, 404);
+    public void postExistingPetType() {
+        int statusCode = pt.addPetType();
+        pt.petTypeName = String.format("New pet type # %f", Math.random());
+        statusCode = pt.addPetType();
+        System.out.println("The status code for post pet type twice received: " + statusCode);
+        Assertions.assertEquals(statusCode, 201);
+    }
+
+    @Test
+    public void putPetType() {
+        pt.addPetType();
+        pt.petTypeName = String.format("New pet type # %f", Math.random());
+        int statusCode = pt.updatePetType();
+        System.out.println("The status code for put pet type received: " + statusCode);
+        Assertions.assertEquals(statusCode, 204);
     }
     @Test
     public void deletePetType() {
-        int statusCode = callDeletePetType(petTypeId);
+        pt.addPetType();
+        int statusCode = pt.callDeletePetType(pt.petTypeId);
         Assertions.assertEquals(statusCode, 204);
     }
-
-    private int callDeletePetType(int petTypeId1) {
-        RequestSpecification request = RestAssured.given();
-        request.header("Content-Type", "application/json");
-
-        Response response = request.delete(baseUrl+ petTypeId1);
-        int statusCode = response.getStatusCode();
-        System.out.println("The status code received: " + statusCode);
-        return statusCode;
-    }
-    public Response callGetPetTypeList() {
-        RequestSpecification request = RestAssured.given();
-        request.header("Content-Type", "application/json");
-
-        Response response = request.get(baseUrl).then().contentType(ContentType.JSON).extract().response();
-        return response;
-    }
-
     @Test
-    public void getPetTypeIdByName () {
-        Response  petTypesList = callGetPetTypeList();
-        Object str = petTypesList.jsonPath().getList(".").stream()
-                .map(m -> (Map<String, Object>) m)
-                .filter(m -> m.get("name").equals(petName))
-                .map(m -> m.get("id"))
-                .findAny().get()
-                ;
-        ;
-        System.out.println(str);
- //       Map<String, String> petTypes = petTypesList.jsonPath().getMap("name");
-//        System.out.println(petTypes.get("id"));
+    public void deleteNotExistingPetType() {
+        pt.addPetType();
+        int statusCode = pt.callDeletePetType(pt.petTypeId+1);
+        Assertions.assertEquals(statusCode, 404);
     }
 }
